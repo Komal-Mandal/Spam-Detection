@@ -12,20 +12,12 @@ import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer()
 
-import nltk
+import re
 
-# Add a try-except block to avoid errors if resources are already downloaded
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+def simple_tokenize(text):
+    # Split text on whitespace and punctuation
+    return re.findall(r'\b\w+\b', text.lower())
 
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
-
-# Your remaining code here
 
 
 
