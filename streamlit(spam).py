@@ -15,7 +15,7 @@ nltk.data.path.append('./nltk_data')
 
 # Load pre-trained model and vectorizer
 MODEL_PATH = './model.pkl'
-VECTORIZER_PATH = './tfidf_vectorizer.pkl'
+VECTORIZER_PATH = './vectorizer.pkl'
 
 try:
     with open(MODEL_PATH, 'rb') as model_file:
