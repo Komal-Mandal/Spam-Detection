@@ -5,13 +5,19 @@ import pickle
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Ensure nltk `punkt` tokenizer is downloaded
+# Ensure required NLTK data is downloaded
+nltk_data_dir = './nltk_data'
+nltk.data.path.append(nltk_data_dir)
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
-    nltk.download('punkt', download_dir='./nltk_data')
+    nltk.download('punkt', download_dir=nltk_data_dir)
 
-nltk.data.path.append('./nltk_data')
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords', download_dir=nltk_data_dir)
 
 # Load pre-trained model and vectorizer
 MODEL_PATH = './model.pkl'
@@ -34,7 +40,7 @@ def transform_text(text):
     tokens = word_tokenize(text)
     # Remove punctuation
     tokens = [token for token in tokens if token not in string.punctuation]
-    # Remove stopwords (optional, add your own stopword list if needed)
+    # Remove stopwords
     stopwords = nltk.corpus.stopwords.words('english')
     tokens = [token for token in tokens if token not in stopwords]
     # Return processed text as a single string
@@ -73,8 +79,3 @@ if st.button("Predict"):
 # Footer
 st.write("---")
 st.write("Powered by [Your Name]")
-
-
-
-
-
