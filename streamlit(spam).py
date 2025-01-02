@@ -12,15 +12,17 @@ import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer()
 
-import re
 
-def simple_tokenize(text):
-    # Split text on whitespace and punctuation
-    return re.findall(r'\b\w+\b', text.lower())
+import nltk
 
 
+nltk.data.path.append('./nltk_data')  
 
 
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', download_dir='./nltk_data')
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
