@@ -12,6 +12,21 @@ import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer()
 
+import nltk
+
+# Add a try-except block to avoid errors if resources are already downloaded
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+# Your remaining code here
+
 
 
 def transform_text(text):
