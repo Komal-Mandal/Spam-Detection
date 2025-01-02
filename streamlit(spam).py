@@ -1,81 +1,63 @@
 import streamlit as st
-import nltk
-from nltk.tokenize import word_tokenize
 import pickle
+import nltk
+nltk.download('punkt')
+from nltk.corpus import stopwords
+nltk.download('stopwords') 
 import string
+from nltk.stem.porter import PorterStemmer
+ps = PorterStemmer()
+import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf = TfidfVectorizer()
 
-# Ensure required NLTK data is downloaded
-nltk_data_dir = './nltk_data'
-nltk.data.path.append(nltk_data_dir)
 
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt', download_dir=nltk_data_dir)
 
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords', download_dir=nltk_data_dir)
-
-# Load pre-trained model and vectorizer
-MODEL_PATH = './model.pkl'
-VECTORIZER_PATH = './vectorizer.pkl'
-
-try:
-    with open(MODEL_PATH, 'rb') as model_file:
-        model = pickle.load(model_file)
-    with open(VECTORIZER_PATH, 'rb') as vectorizer_file:
-        tfidf = pickle.load(vectorizer_file)
-except FileNotFoundError as e:
-    st.error(f"Required file not found: {e}")
-    st.stop()
-
-# Text transformation function
 def transform_text(text):
-    # Lowercase the text
     text = text.lower()
-    # Tokenize
-    tokens = word_tokenize(text)
-    # Remove punctuation
-    tokens = [token for token in tokens if token not in string.punctuation]
-    # Remove stopwords
-    stopwords = nltk.corpus.stopwords.words('english')
-    tokens = [token for token in tokens if token not in stopwords]
-    # Return processed text as a single string
-    return ' '.join(tokens)
+    text = nltk.word_tokenize(text)
 
-# Streamlit app
-st.title("Spam Detection App")
-st.write("Enter a message below to determine if it's spam or not.")
+    y = []
+    for i in text:
+        if i.isalnum():
+            y.append(i)
 
-# Input text
-input_sms = st.text_input("Enter a message:")
+    text = y[:]
+    y.clear()
 
-# Predict button
-if st.button("Predict"):
-    if input_sms.strip():
-        # Transform text
-        transformed_sms = transform_text(input_sms)
-        
-        # Vectorize the transformed text
-        vectorized_sms = tfidf.transform([transformed_sms])
-        
-        # Make prediction
-        prediction = model.predict(vectorized_sms)[0]
-        prediction_proba = model.predict_proba(vectorized_sms)[0]
-        
-        # Display result
-        if prediction == 1:
-            st.error("This message is classified as **SPAM**.")
-            st.write(f"Confidence: {prediction_proba[1]:.2f}")
-        else:
-            st.success("This message is classified as **NOT SPAM**.")
-            st.write(f"Confidence: {prediction_proba[0]:.2f}")
-    else:
-        st.warning("Please enter a message to analyze.")
+    for i in text:
+        if i not in stopwords.words('english') and i not in string.punctuation:
+            y.append(i)
 
-# Footer
-st.write("---")
-st.write("Powered by [Your Name]")
+    text = y[:]
+    y.clear()
+
+    for i in text:
+        y.append(ps.stem(i))
+
+
+    return " ".join(y)
+
+vectorizer = pickle.load(open("vectorizer.pkl","rb"))
+model = pickle.load(open("model.pkl","rb"))
+
+st.title("Email/sms classifier")
+
+input_sms = st.text_input("Enter the message")
+
+if st.button("predict"):
+   transformed_sms = transform_text(input_sms)
+
+   Vector_input = vectorizer.transform([transformed_sms])
+
+
+   result = model.predict(Vector_input)[0]
+
+   if result == 1:
+      st.header("Spam")
+   else:
+     st.header("Not Spam")
+
+
+
+
