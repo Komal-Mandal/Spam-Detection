@@ -14,7 +14,7 @@ except LookupError:
 nltk.data.path.append('./nltk_data')
 
 # Load pre-trained model and vectorizer
-MODEL_PATH = './spam_model.pkl'
+MODEL_PATH = './model.pkl'
 VECTORIZER_PATH = './tfidf_vectorizer.pkl'
 
 try:
